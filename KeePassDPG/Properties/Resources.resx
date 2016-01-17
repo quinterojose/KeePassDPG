@@ -197,6 +197,6 @@
     <value>..\Resources\words9.gz;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">
-    <value>http://onedrive.live.com/download?resid=9A9D4C5CF8615914%2162682</value>
+    <value>https://raw.githubusercontent.com/Mascavidrio/KeePassDPG/master/plugin-version.txt</value>
   </data>
 </root>
