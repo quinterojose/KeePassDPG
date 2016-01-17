@@ -90,7 +90,7 @@ namespace KeePassDPG.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://www.dropbox.com/s/13y5ssdo07alhtw/plugin-version.txt?dl=1.
+        ///   Looks up a localized string similar to http://onedrive.live.com/download?resid=9A9D4C5CF8615914%2162682.
         /// </summary>
         internal static string UpdateUrl {
             get {
