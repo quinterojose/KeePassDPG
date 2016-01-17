@@ -197,6 +197,6 @@
     <value>..\Resources\words9.gz;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UpdateUrl" xml:space="preserve">
-    <value>https://bitbucket.org/jose_quintero/keepassdpg/downloads/plugin-version.txt</value>
+    <value>https://www.dropbox.com/s/13y5ssdo07alhtw/plugin-version.txt?dl=1</value>
   </data>
 </root>
