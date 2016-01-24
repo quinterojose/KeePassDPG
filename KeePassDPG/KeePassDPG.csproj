@@ -97,7 +97,33 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Debug copy $(TargetFileName) "C:\Program Files (x86)\KeePass Password Safe 2\$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>SET KPDir=C:\Program Files (x86)\KeePass Password Safe 2\
+
+IF $(ConfigurationName) == Debug COPY $(TargetFileName) "%25KPDir%25$(TargetFileName)"
+
+IF $(ConfigurationName) == Release (
+IF EXIST "%25KPDir%25$(TargetFileName)" DEL "%25KPDir%25$(TargetFileName)" /Q
+	
+IF NOT EXIST "$(TargetDir)KeePassPLGX" (
+MD "$(TargetDir)$(TargetName)"
+MD "$(TargetDir)$(TargetName)\Properties"
+MD "$(TargetDir)$(TargetName)\Resources"
+)
+XCOPY $(ProjectDir)*.csproj "$(TargetDir)$(TargetName)" /Y
+XCOPY $(ProjectDir)*.cs "$(TargetDir)$(TargetName)" /Y
+XCOPY $(ProjectDir)*.resx "$(TargetDir)$(TargetName)" /Y
+XCOPY "$(ProjectDir)\Properties\*.cs" "$(TargetDir)$(TargetName)\Properties" /Y
+XCOPY "$(ProjectDir)\Properties\*.resx" "$(TargetDir)$(TargetName)\Properties" /Y
+XCOPY "$(ProjectDir)\Resources\*.*" "$(TargetDir)$(TargetName)\Resources" /Y
+
+"%25KPDir%25KeePass.exe" --plgx-create "$(TargetDir)$(TargetName)"
+
+DEL /s /f /q "$(TargetDir)$(TargetName)\*.*"
+RMDIR /s /q "$(TargetDir)$(TargetName)
+
+COPY "$(TargetDir)$(TargetName).plgx" "%25KPDir%25$(TargetName).plgx"
+
+)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

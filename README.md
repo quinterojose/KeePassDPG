@@ -11,7 +11,7 @@ A plugin for KeePass to allow creating easy to remember passwords based on a wor
 
 ## Windows Installation
  1. Download latest release from [https://github.com/Mascavidrio/KeePassDPG/releases](https://github.com/Mascavidrio/KeePassDPG/releases).
- 2. Unzip directly to the KeePass directory.
+ 2. Copy plgx directly into the KeePass directory.
  3. Start KeePass.
 
 ## Using KeePassDPG
