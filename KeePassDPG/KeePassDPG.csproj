@@ -98,11 +98,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>SET KPDir=C:\Program Files (x86)\KeePass Password Safe 2\
+SET KPPluginsDir=%25KPDir%25Plugins\
 
-IF $(ConfigurationName) == Debug COPY $(TargetFileName) "%25KPDir%25$(TargetFileName)"
+IF $(ConfigurationName) == Debug COPY $(TargetFileName) "%25KPPluginsDir%25$(TargetFileName)"
 
 IF $(ConfigurationName) == Release (
-IF EXIST "%25KPDir%25$(TargetFileName)" DEL "%25KPDir%25$(TargetFileName)" /Q
+IF EXIST "%25KPPluginsDir%25$(TargetFileName)" DEL "%25KPPluginsDir%25$(TargetFileName)" /Q
 	
 IF NOT EXIST "$(TargetDir)KeePassPLGX" (
 MD "$(TargetDir)$(TargetName)"
@@ -121,7 +122,7 @@ XCOPY "$(ProjectDir)\Resources\*.*" "$(TargetDir)$(TargetName)\Resources" /Y
 DEL /s /f /q "$(TargetDir)$(TargetName)\*.*"
 RMDIR /s /q "$(TargetDir)$(TargetName)
 
-COPY "$(TargetDir)$(TargetName).plgx" "%25KPDir%25$(TargetName).plgx"
+COPY "$(TargetDir)$(TargetName).plgx" "%25KPPluginsDir%25$(TargetName).plgx"
 
 )</PostBuildEvent>
   </PropertyGroup>
