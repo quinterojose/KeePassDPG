@@ -43,7 +43,10 @@ namespace KeePassDPG
             Close();
         }
 
-        private void OptionDialog_FormClosed(object sender, FormClosedEventArgs e) => GlobalWindowManager.RemoveWindow(this);
+        private void OptionDialog_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            GlobalWindowManager.RemoveWindow(this);
+        }
 
         private void PasswordLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
         {

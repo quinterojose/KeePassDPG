@@ -82,17 +82,35 @@ namespace KeePassDPG
         /// <summary>
         /// Gets the custom password generator name.
         /// </summary>
-        public override string Name => Properties.Resources.PluginName;
+        public override string Name
+        {
+            get
+            {
+                return Properties.Resources.PluginName;
+            }
+        }
 
         /// <summary>
         /// Gets the custom password generator unique ID.
         /// </summary>
-        public override PwUuid Uuid => new PwUuid(new Guid(Properties.Resources.UUID).ToByteArray());
+        public override PwUuid Uuid
+        {
+            get
+            {
+                return new PwUuid(new Guid(Properties.Resources.UUID).ToByteArray());
+            }
+        }
 
         /// <summary>
         /// Gets whether the password generator supports options
         /// </summary>
-        public override bool SupportsOptions => true;
+        public override bool SupportsOptions
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         /// <summary>
         /// Generate a random dictionary password.

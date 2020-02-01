@@ -68,6 +68,9 @@ namespace KeePassDPG
         /// Ouptut a string representation of the options.
         /// </summary>
         /// <returns>A string.</returns>
-        public override string ToString() => $"{WordLength}|{SubstituteCharacters}|{SubstitutionList}|{CapitalizationType}";
+        public override string ToString()
+        {
+            return string.Format("{0}|{1}|{2}|{3}", WordLength, SubstituteCharacters, SubstitutionList, CapitalizationType);
+        }
     }
 }
