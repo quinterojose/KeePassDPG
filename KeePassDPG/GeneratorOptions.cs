@@ -70,7 +70,7 @@ namespace KeePassDPG
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return string.Format("{0}|{1}|{2}|{3}", WordLength, SubstituteCharacters, SubstitutionList, CapitalizationType);
+            return $"{WordLength}|{SubstituteCharacters}|{SubstitutionList}|{CapitalizationType}";
         }
     }
 }
