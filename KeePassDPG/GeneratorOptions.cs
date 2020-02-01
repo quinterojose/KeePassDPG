@@ -32,7 +32,7 @@ namespace KeePassDPG
         /// </summary>
         public GeneratorOptions()
         {
-            WordLength = 6;
+            WordLength = 8;
             SubstituteCharacters = false;
             SubstitutionList = string.Empty;
             CapitalizationType = CapitalizationTypes.None;
@@ -57,7 +57,7 @@ namespace KeePassDPG
             }
             else
             {
-                WordLength = 6;
+                WordLength = 8;
                 SubstituteCharacters = false;
                 SubstitutionList = string.Empty;
                 CapitalizationType = CapitalizationTypes.None;
