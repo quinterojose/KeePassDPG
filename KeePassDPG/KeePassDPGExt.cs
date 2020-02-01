@@ -37,23 +37,11 @@ namespace KeePassDPG
         /// <summary>
         /// Icon to be displayed on the KeePass plugin list.
         /// </summary>
-        public override Image SmallIcon
-        {
-            get
-            {
-                return Properties.Resources.kgpg_gen;
-            }
-        }
+        public override Image SmallIcon => Properties.Resources.kgpg_gen;
 
         /// <summary>
         /// Gets the plugin update URL.
         /// </summary>
-        public override string UpdateUrl
-        {
-            get
-            {
-                return Properties.Resources.UpdateUrl;
-            }
-        }
+        public override string UpdateUrl => Properties.Resources.UpdateUrl;
     }
 }

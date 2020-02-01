@@ -20,11 +20,13 @@ namespace KeePassDPG
 
             if (this.ShowDialog() != DialogResult.OK) return defaults;
 
-            GeneratorOptions options = new GeneratorOptions();
-            options.WordLength = Convert.ToInt32(PasswordLengthNumericUpDown.Value);
-            options.SubstituteCharacters = SubsituteCheckBox.Checked;
-            options.SubstitutionList = SubstitutionComboBox.Text;
-            options.CapitalizationType = (CapitalizationTypes)CapitalizationComboBox.SelectedIndex;
+            GeneratorOptions options = new GeneratorOptions
+            {
+                WordLength = Convert.ToInt32(PasswordLengthNumericUpDown.Value),
+                SubstituteCharacters = SubsituteCheckBox.Checked,
+                SubstitutionList = SubstitutionComboBox.Text,
+                CapitalizationType = (CapitalizationTypes)CapitalizationComboBox.SelectedIndex
+            };
 
             return options;
         }
@@ -37,14 +39,11 @@ namespace KeePassDPG
 
         private void AcceptButton_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
-        private void OptionDialog_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            GlobalWindowManager.RemoveWindow(this);
-        }
+        private void OptionDialog_FormClosed(object sender, FormClosedEventArgs e) => GlobalWindowManager.RemoveWindow(this);
 
         private void PasswordLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
         {

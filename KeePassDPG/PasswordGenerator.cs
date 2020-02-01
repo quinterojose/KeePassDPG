@@ -54,7 +54,7 @@ namespace KeePassDPG
         /// The output is then added as a resource to the assembly. When a file dictionary is used, it is decompressed and then
         /// read by the plugin.
         /// </remarks>
-        private static Dictionary<int, byte[]> _wordDictionaryMap = new Dictionary<int, byte[]> {
+        private static readonly Dictionary<int, byte[]> _wordDictionaryMap = new Dictionary<int, byte[]> {
             {6, Properties.Resources.words6},
             {7, Properties.Resources.words7},
             {8, Properties.Resources.words8},
@@ -82,35 +82,17 @@ namespace KeePassDPG
         /// <summary>
         /// Gets the custom password generator name.
         /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return Properties.Resources.PluginName;
-            }
-        }
+        public override string Name => Properties.Resources.PluginName;
 
         /// <summary>
         /// Gets the custom password generator unique ID.
         /// </summary>
-        public override PwUuid Uuid
-        {
-            get
-            {
-                return new PwUuid(new Guid(Properties.Resources.UUID).ToByteArray());
-            }
-        }
+        public override PwUuid Uuid => new PwUuid(new Guid(Properties.Resources.UUID).ToByteArray());
 
         /// <summary>
         /// Gets whether the password generator supports options
         /// </summary>
-        public override bool SupportsOptions
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsOptions => true;
 
         /// <summary>
         /// Generate a random dictionary password.
@@ -228,11 +210,10 @@ namespace KeePassDPG
             Dictionary<char, char> replacementDictionary = new Dictionary<char, char>();
 
             string[] replacementElements = substitutionList.Split(';');
-            string[] elementMembers = null;
 
             foreach (string replacementElement in replacementElements)
             {
-                elementMembers = replacementElement.Split(new char[] { '=' });
+                string[] elementMembers = replacementElement.Split(new char[] { '=' });
                 replacementDictionary.Add(elementMembers[0][0], elementMembers[1][0]);
             }
 

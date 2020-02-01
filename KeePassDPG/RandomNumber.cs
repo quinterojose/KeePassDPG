@@ -16,20 +16,14 @@ namespace KeePassDPG
         /// Initializes a new RandomNumber
         /// </summary>
         /// <param name="stream">The random stream.</param>
-        public RandomNumber(CryptoRandomStream stream)
-        {
-            _stream = stream;
-        }
+        public RandomNumber(CryptoRandomStream stream) => _stream = stream;
 
         /// <summary>
         /// Returns the next random number.
         /// </summary>
         /// <param name="max">The maximum number.</param>
         /// <returns>A random number.</returns>
-        public int Next(int max)
-        {
-            return Next(0, max);
-        }
+        public int Next(int max) => Next(0, max);
 
         /// <summary>
         /// Returns the next random number.
