@@ -24,8 +24,11 @@ namespace KeePassDPG.Compressor
             Console.WriteLine(string.Format("Compressor for KeePass Dictionary Password Generator v{0}", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
             Console.WriteLine();
 
-            // Open source file
-            _sourceFile = args[0];
+            if (args is null || args.Length == 0)
+            {
+                Console.WriteLine("Specify a file location:");
+                _sourceFile = Console.ReadLine();
+            }
 
             if (!string.IsNullOrEmpty(_sourceFile))
             {

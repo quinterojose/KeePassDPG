@@ -7,7 +7,7 @@ A plugin for KeePass to allow creating easy to remember passwords based on a wor
  * Allow first letter or random letter capitalization.
 
 ## System Requirements
- * KeePass 2.44 or higher
+ * KeePass 2.50 or higher
 
 ## Windows Installation
  1. Download latest release from [https://github.com/Mascavidrio/KeePassDPG/releases](https://github.com/Mascavidrio/KeePassDPG/releases).

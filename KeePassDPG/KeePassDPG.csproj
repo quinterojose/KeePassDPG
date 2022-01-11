@@ -33,9 +33,9 @@
     <LangVersion>5</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KeePass">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\KeePass Password Safe 2\KeePass.exe</HintPath>
-      <Private>False</Private>
+    <Reference Include="KeePass, Version=2.49.0.17016, Culture=neutral, PublicKeyToken=fed2ed7716aecf5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\KeePass-Latest\KeePass.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="GeneratorOptions.cs" />
     <Compile Include="KeePassDPGExt.cs" />
     <Compile Include="OptionDialog.cs">
@@ -100,40 +103,50 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>SET KPDir=C:\Program Files (x86)\KeePass Password Safe 2\
-SET KPPluginsDir=%25KPDir%25Plugins\
-
-IF $(ConfigurationName) == Debug COPY $(TargetFileName) "%25KPPluginsDir%25$(TargetFileName)"
-
-IF $(ConfigurationName) == Release (
-IF EXIST "%25KPPluginsDir%25$(TargetFileName)" DEL "%25KPPluginsDir%25$(TargetFileName)" /Q
-	
-IF NOT EXIST "$(TargetDir)KeePassPLGX" (
-MD "$(TargetDir)$(TargetName)"
-MD "$(TargetDir)$(TargetName)\Properties"
-MD "$(TargetDir)$(TargetName)\Resources"
-)
-XCOPY $(ProjectDir)*.csproj "$(TargetDir)$(TargetName)" /Y
-XCOPY $(ProjectDir)*.cs "$(TargetDir)$(TargetName)" /Y
-XCOPY $(ProjectDir)*.resx "$(TargetDir)$(TargetName)" /Y
-XCOPY "$(ProjectDir)\Properties\*.cs" "$(TargetDir)$(TargetName)\Properties" /Y
-XCOPY "$(ProjectDir)\Properties\*.resx" "$(TargetDir)$(TargetName)\Properties" /Y
-XCOPY "$(ProjectDir)\Resources\*.*" "$(TargetDir)$(TargetName)\Resources" /Y
-
-"%25KPDir%25KeePass.exe" --plgx-create "$(TargetDir)$(TargetName)"
-
-DEL /s /f /q "$(TargetDir)$(TargetName)\*.*"
-RMDIR /s /q "$(TargetDir)$(TargetName)
-
-COPY "$(TargetDir)$(TargetName).plgx" "%25KPPluginsDir%25$(TargetName).plgx"
-
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
+  </Target>  
   -->
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <KeePassDir>$(SolutionDir)..\KeePass-Latest\</KeePassDir>
+      <KeePassPluginsDir>$(KeePassDir)\Plugins\</KeePassPluginsDir>
+      <PLGXBuildDir>$(SolutionDir)PLGXBuild\$(TargetName)</PLGXBuildDir>
+    </PropertyGroup>
+  </Target>
+  <Target Name="CopyDLLToPluginsFolder" AfterTargets="AfterBuild" Condition="$(ConfigurationName) == Debug">
+    <Delete Files="$(KeePassPluginsDir)$(TargetName).plgx" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(KeePassPluginsDir)" />
+  </Target>
+  <Target Name="BuildPLGX" AfterTargets="AfterBuild" Condition="$(ConfigurationName) == Release">
+    <MakeDir Directories="$(PLGXBuildDir);$(PLGXBuildDir)\Properties\;$(PLGXBuildDir)\Resources\" />
+    <ItemGroup>
+      <GetFiles Include="$(ProjectDir)*.csproj;$(ProjectDir)*.cs;$(ProjectDir)*.resx">
+        <Destination>$(PLGXBuildDir)</Destination>
+      </GetFiles>
+      <GetFiles Include="$(ProjectDir)Properties\*.cs;$(ProjectDir)Properties\*.resx">
+        <Destination>$(PLGXBuildDir)\Properties\</Destination>
+      </GetFiles>
+      <GetFiles Include="$(ProjectDir)Resources\*.*">
+        <Destination>$(PLGXBuildDir)\Resources\</Destination>
+      </GetFiles>
+    </ItemGroup>
+    <Copy SourceFiles="%(GetFiles.Identity)" DestinationFolder="%(GetFiles.Destination)" />
+    <Exec Command="$(KeePassDir)KeePass.exe --plgx-create $(PLGXBuildDir)" />
+  </Target>
+  <Target Name="CopyPLGXToPluginsFolder" AfterTargets="BuildPLGX" Condition="$(ConfigurationName) == Release">
+    <Delete Files="$(KeePassPluginsDir)$(TargetFileName)" />
+    <Copy SourceFiles="$(PLGXBuildDir).plgx" DestinationFolder="$(KeePassPluginsDir)" />
+  </Target>
+  <Target Name="UpdatePluginVersionFile" AfterTargets="AfterBuild" Condition="$(ConfigurationName) == Release">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyIdentities" />
+    </GetAssemblyIdentity>
+    <WriteLinesToFile File="$(SolutionDir)plugin-version.txt" Lines=":%0d%0a$(TargetName):%(AssemblyIdentities.Version)%0d%0a:" Overwrite="true">
+    </WriteLinesToFile>
+  </Target>
 </Project>
