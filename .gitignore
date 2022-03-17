@@ -231,3 +231,7 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+# Local data folders
+/src/words
+/src/KeePassDPG.Compressor/Properties/launchSettings.json

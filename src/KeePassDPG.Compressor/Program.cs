@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandLine;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -11,73 +12,61 @@ namespace KeePassDPG.Compressor
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Compressor for KeePass Dictionary Password Generator");
-            Console.WriteLine();
+            Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(RunOptions);
+        }
 
+        private static void RunOptions(Options options)
+        {
             var wordLists = new List<WordList>();
 
-            Console.WriteLine("Specify a source file location:");
-            var sourceFileName = Console.ReadLine();
-            Console.WriteLine($"Compressed files will be output to: {Path.GetDirectoryName(sourceFileName)}");
+            options.Output ??= Path.GetDirectoryName(options.Source);
+            Console.WriteLine($"Compressed files will be output to {options.Output}.");
 
-            if (!string.IsNullOrEmpty(sourceFileName))
+            if (File.Exists(options.Source))
             {
-                if (File.Exists(sourceFileName))
+                using (var reader = new StreamReader(options.Source))
                 {
-                    using (var reader = new StreamReader(sourceFileName))
-                    {
-                        Console.WriteLine("Reading file...");
-                        Console.WriteLine();
+                    Console.WriteLine($"Reading {options.Source}...");
 
-                        // Read words
-                        var fileData = reader.ReadToEnd();
-                        var sourceWords = fileData.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    // Read words
+                    var fileData = reader.ReadToEnd();
+                    var sourceWords = fileData.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        Array.ForEach(sourceWords, word => PutWord(word.Trim().ToLowerInvariant(), wordLists));
-                    }
-
-                    // Write files.
-                    wordLists.ForEach(wordList =>
-                    {
-                        Console.WriteLine("Writing {0} letter word file.", wordList.WordLength);
-                        Console.WriteLine();
-                        WriteCompressedFile(wordList, sourceFileName);
-                    });
+                    Array.ForEach(sourceWords, word => PutWord(word.Trim().ToLowerInvariant(), wordLists));
                 }
-                else
+
+                // Write files.
+                wordLists.ForEach(wordList =>
                 {
-                    Console.WriteLine("A valid source file must be specified.");
-                    Console.WriteLine();
-                    ShowHelp();
-                }
+                    Console.WriteLine($"Writing {wordList.WordLength} letter word file...");
+                    WriteCompressedFile(wordList, options.Output!);
+                });
             }
             else
             {
-                ShowHelp();
+                Console.WriteLine($"Source file {options.Source} is not a valid file name.");
             }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadLine();
         }
 
-        private static void WriteCompressedFile(WordList wordList, string sourceFile)
+        private static void WriteCompressedFile(WordList wordList, string outputPath)
         {
-            string filePath = Path.Combine(Path.GetDirectoryName(sourceFile)!, string.Format("words{0}.gz", wordList.WordLength));
+            string filePath = Path.Combine(outputPath, $"words{wordList.WordLength}.gz");
 
             using var compressedFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
             using var compressionStream = new GZipStream(compressedFile, CompressionMode.Compress);
             try
             {
-                // Output new file
+                // Convert string data to byte array
                 var data = string.Join(" ", wordList.ToArray());
                 var bytes = new byte[data.Length * sizeof(char)];
                 Buffer.BlockCopy(data.ToCharArray(), 0, bytes, 0, bytes.Length);
 
+                // Copy array to compression stream
                 using var stream = new MemoryStream(bytes);
                 stream.CopyTo(compressionStream);
 
-                Console.WriteLine("{0} created.", Path.GetFileName(filePath));
-                Console.WriteLine();
+                Console.WriteLine($"File {filePath} created.");
             }
             catch (Exception ex)
             {
@@ -104,12 +93,6 @@ namespace KeePassDPG.Compressor
 
             // Add the word to the word list.
             wordList.Add(word);
-        }
-
-        private static void ShowHelp()
-        {
-            Console.WriteLine("Usage: compressor [source] [destination]");
-            Console.WriteLine();
         }
     }
 }
