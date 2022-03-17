@@ -9,53 +9,40 @@ namespace KeePassDPG.Compressor
 {
     class Program
     {
-        /// <summary>
-        /// The lists of words.
-        /// </summary>
-        private static List<WordList> _wordLists;
-
-        /// <summary>
-        /// The source file location.
-        /// </summary>
-        private static string _sourceFile;
-
         static void Main(string[] args)
         {
-            Console.WriteLine(string.Format("Compressor for KeePass Dictionary Password Generator v{0}", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+            Console.WriteLine("Compressor for KeePass Dictionary Password Generator");
             Console.WriteLine();
 
-            if (args is null || args.Length == 0)
-            {
-                Console.WriteLine("Specify a file location:");
-                _sourceFile = Console.ReadLine();
-            }
+            var wordLists = new List<WordList>();
 
-            if (!string.IsNullOrEmpty(_sourceFile))
+            Console.WriteLine("Specify a source file location:");
+            var sourceFileName = Console.ReadLine();
+            Console.WriteLine($"Compressed files will be output to: {Path.GetDirectoryName(sourceFileName)}");
+
+            if (!string.IsNullOrEmpty(sourceFileName))
             {
-                if (File.Exists(_sourceFile))
+                if (File.Exists(sourceFileName))
                 {
-                    using (StreamReader reader = new StreamReader(_sourceFile))
+                    using (var reader = new StreamReader(sourceFileName))
                     {
                         Console.WriteLine("Reading file...");
                         Console.WriteLine();
 
                         // Read words
-                        string fileData = reader.ReadToEnd();
-                        string[] sourceWords = fileData.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        var fileData = reader.ReadToEnd();
+                        var sourceWords = fileData.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        foreach (string word in sourceWords)
-                        {
-                            PutWord(word.Trim().ToLowerInvariant());
-                        }
+                        Array.ForEach(sourceWords, word => PutWord(word.Trim().ToLowerInvariant(), wordLists));
                     }
 
                     // Write files.
-                    foreach (WordList wordList in _wordLists)
+                    wordLists.ForEach(wordList =>
                     {
                         Console.WriteLine("Writing {0} letter word file.", wordList.WordLength);
                         Console.WriteLine();
-                        WriteCompressedFile(wordList);
-                    }
+                        WriteCompressedFile(wordList, sourceFileName);
+                    });
                 }
                 else
                 {
@@ -73,69 +60,52 @@ namespace KeePassDPG.Compressor
             Console.ReadLine();
         }
 
-        /// <summary>
-        /// Write the specified list of words to a compressed file.
-        /// </summary>
-        /// <param name="wordList"></param>
-        private static void WriteCompressedFile(WordList wordList)
+        private static void WriteCompressedFile(WordList wordList, string sourceFile)
         {
-            string filePath = Path.Combine(Path.GetDirectoryName(_sourceFile), string.Format("words{0}.gz", wordList.WordLength));
+            string filePath = Path.Combine(Path.GetDirectoryName(sourceFile)!, string.Format("words{0}.gz", wordList.WordLength));
 
-            using (FileStream compressedFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+            using var compressedFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var compressionStream = new GZipStream(compressedFile, CompressionMode.Compress);
+            try
             {
-                using (GZipStream compressionStream = new GZipStream(compressedFile, CompressionMode.Compress))
-                {
-                    try
-                    {
-                        // Output new file
-                        string data = String.Join(" ", wordList.ToArray());
-                        byte[] bytes = new byte[data.Length * sizeof(char)];
-                        Buffer.BlockCopy(data.ToCharArray(), 0, bytes, 0, bytes.Length);
+                // Output new file
+                var data = string.Join(" ", wordList.ToArray());
+                var bytes = new byte[data.Length * sizeof(char)];
+                Buffer.BlockCopy(data.ToCharArray(), 0, bytes, 0, bytes.Length);
 
-                        using (MemoryStream stream = new MemoryStream(bytes))
-                        {
-                            stream.CopyTo(compressionStream);
+                using var stream = new MemoryStream(bytes);
+                stream.CopyTo(compressionStream);
 
-                            Console.WriteLine("{0} created.", Path.GetFileName(filePath));
-                            Console.WriteLine();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        Console.WriteLine(ex.StackTrace);
-                        Console.WriteLine();
-                    }
-                }
+                Console.WriteLine("{0} created.", Path.GetFileName(filePath));
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine();
             }
         }
 
-        /// <summary>
-        /// Adds the specified word to the appropriate word list.
-        /// </summary>
-        /// <param name="word">The word to add.</param>
-        private static void PutWord(string word)
+        private static void PutWord(string word, List<WordList> wordLists)
         {
             if (string.IsNullOrEmpty(word))
                 return;
 
-            if (_wordLists == null)
-                _wordLists = new List<WordList>();
-
-            WordList wordList = _wordLists.SingleOrDefault(e => e.WordLength == word.Length);
+            // Get existing word list
+            var wordList = wordLists.SingleOrDefault(e => e.WordLength == word.Length);
 
             if (wordList == null)
             {
+                // Word list not found, add new word list.
                 wordList = new WordList { WordLength = word.Length };
-                _wordLists.Add(wordList);
+                wordLists.Add(wordList);
             }
 
+            // Add the word to the word list.
             wordList.Add(word);
         }
 
-        /// <summary>
-        /// Show usage information.
-        /// </summary>
         private static void ShowHelp()
         {
             Console.WriteLine("Usage: compressor [source] [destination]");
