@@ -232,8 +232,6 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-# PLGX Build Folder
-PLGXBuild/
-
-# Tools folder
-Tools/
+# Local data folders
+/src/words
+/src/KeePassDPG.Compressor/Properties/launchSettings.json

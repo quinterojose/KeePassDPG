@@ -1,10 +1,13 @@
+[![build](https://github.com/Mascavidrio/KeePassDPG/actions/workflows/build.yml/badge.svg)](https://github.com/Mascavidrio/KeePassDPG/actions/workflows/build.yml)
+
 # KeePassDPG
 A plugin for KeePass to allow creating easy to remember passwords based on a word dictionary.
 
 ## Features
- * Create passwords using an internal dictionary file of words ranging from 6 to 28 characters in length.
+ * Create passwords using an internal dictionary file of words ranging from 6 to 28 characters in length with the exception of words with 26 characters. There is no dictionary for this option.
  * Allow custom character substitution by specifying a substitution list.
- * Allow first letter or random letter capitalization.
+     * For example, substitute the letter A for 4 or @, substitute the letter O for 0, etc.
+ * Allow first letter, random letter, or no capitalization.
 
 ## System Requirements
  * KeePass 2.50 or higher
@@ -25,7 +28,7 @@ Click on the button next to the custom algorithm dropdown in the Password Genera
 
 #### Dictionary
 
-This tab is used to specify the password length. The generator uses several dictionary files, one for each word length to randomly select a word.
+This tab is used to specify the word dictionary to use. The generator uses several dictionary files, one for each word length to randomly select a word.
 
 #### Substitution
 

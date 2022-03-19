@@ -48,10 +48,10 @@ namespace KeePassDPG
             if (!string.IsNullOrEmpty(optionString))
             {
                 // Parse the string.
-                string[] options = optionString.Split('|');
+                var options = optionString.Split('|');
 
                 WordLength = Convert.ToInt32(options[0]);
-                SubstituteCharacters = Boolean.Parse(options[1]);
+                SubstituteCharacters = bool.Parse(options[1]);
                 SubstitutionList = options[2];
                 CapitalizationType = (CapitalizationTypes)Enum.Parse(typeof(CapitalizationTypes), options[3]);
             }

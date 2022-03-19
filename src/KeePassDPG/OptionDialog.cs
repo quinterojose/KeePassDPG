@@ -1,5 +1,6 @@
 ﻿using KeePass.UI;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace KeePassDPG
@@ -9,27 +10,28 @@ namespace KeePassDPG
         public OptionDialog()
         {
             InitializeComponent();
+            InitializePasswordLengthComboBox();
         }
 
         public GeneratorOptions GetOptions(GeneratorOptions defaults)
         {
-            PasswordLengthNumericUpDown.Value = defaults.WordLength;
+            PasswordLengthComboBox.SelectedItem = PasswordGenerator.WordDictionaryMap.Where(item => item.Length == defaults.WordLength).First();
             SubsituteCheckBox.Checked = defaults.SubstituteCharacters;
             SubstitutionComboBox.Text = defaults.SubstitutionList;
             CapitalizationComboBox.SelectedIndex = (int)defaults.CapitalizationType;
 
-            if (this.ShowDialog() != DialogResult.OK) return defaults;
+            if (ShowDialog() != DialogResult.OK) return defaults;
 
-            GeneratorOptions options = new GeneratorOptions
+            var options = new GeneratorOptions
             {
-                WordLength = Convert.ToInt32(PasswordLengthNumericUpDown.Value),
+                WordLength = ((WordDictionaryMapItem)PasswordLengthComboBox.SelectedItem).Length,
                 SubstituteCharacters = SubsituteCheckBox.Checked,
                 SubstitutionList = SubstitutionComboBox.Text,
                 CapitalizationType = (CapitalizationTypes)CapitalizationComboBox.SelectedIndex
             };
 
             return options;
-        }
+        }        
 
         private void OptionDialog_Load(object sender, EventArgs e)
         {
@@ -48,10 +50,11 @@ namespace KeePassDPG
             GlobalWindowManager.RemoveWindow(this);
         }
 
-        private void PasswordLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void InitializePasswordLengthComboBox()
         {
-            if (PasswordLengthNumericUpDown.Value == 26)
-                PasswordLengthNumericUpDown.Value++;
+            PasswordLengthComboBox.DisplayMember = "Description";
+            PasswordLengthComboBox.ValueMember = "Length";
+            PasswordLengthComboBox.DataSource = PasswordGenerator.WordDictionaryMap;            
         }
     }
 }

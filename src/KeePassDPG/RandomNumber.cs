@@ -7,10 +7,7 @@ namespace KeePassDPG
     /// </summary>
     public class RandomNumber
     {
-        /// <summary>
-        /// The random stream generator.
-        /// </summary>
-        private CryptoRandomStream _stream = null;
+        private readonly CryptoRandomStream _stream;
 
         /// <summary>
         /// Initializes a new RandomNumber
@@ -39,7 +36,7 @@ namespace KeePassDPG
         /// <returns>A random number.</returns>
         public int Next(int min, int max)
         {
-            int mod = max - min;
+            var mod = max - min;
             return (int)((uint)_stream.GetRandomUInt64() % mod) + min;
         }
     }

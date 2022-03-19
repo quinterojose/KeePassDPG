@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace KeePassDPG
 {
@@ -35,14 +36,8 @@ namespace KeePassDPG
     /// </summary>
     public class PasswordGenerator : CustomPwGenerator
     {
-        /// <summary>
-        /// The current word length
-        /// </summary>
         private int _currentWordLength;
 
-        /// <summary>
-        /// The current word dictionary.
-        /// </summary>
         private List<string> _wordDictionary;
 
         /// <summary>
@@ -54,29 +49,30 @@ namespace KeePassDPG
         /// The output is then added as a resource to the assembly. When a file dictionary is used, it is decompressed and then
         /// read by the plugin.
         /// </remarks>
-        private static readonly Dictionary<int, byte[]> _wordDictionaryMap = new Dictionary<int, byte[]> {
-            {6, Properties.Resources.words6},
-            {7, Properties.Resources.words7},
-            {8, Properties.Resources.words8},
-            {9, Properties.Resources.words9},
-            {10, Properties.Resources.words10},
-            {11, Properties.Resources.words11},
-            {12, Properties.Resources.words12},
-            {13, Properties.Resources.words13},
-            {14, Properties.Resources.words14},
-            {15, Properties.Resources.words15},
-            {16, Properties.Resources.words16},
-            {17, Properties.Resources.words17},
-            {18, Properties.Resources.words18},
-            {19, Properties.Resources.words19},
-            {20, Properties.Resources.words20},
-            {21, Properties.Resources.words21},
-            {22, Properties.Resources.words22},
-            {23, Properties.Resources.words23},
-            {24, Properties.Resources.words24},
-            {25, Properties.Resources.words25},            
-            {27, Properties.Resources.words27},
-            {28, Properties.Resources.words28}
+        internal static readonly List<WordDictionaryMapItem> WordDictionaryMap = new List<WordDictionaryMapItem>
+        {
+            new WordDictionaryMapItem{ Length = 6, Data= Properties.Resources.words6, Description = "6 letters" },
+            new WordDictionaryMapItem{ Length = 7, Data= Properties.Resources.words7, Description = "7 letters" },
+            new WordDictionaryMapItem{ Length = 8, Data= Properties.Resources.words8, Description = "8 letters" },
+            new WordDictionaryMapItem{ Length = 9, Data= Properties.Resources.words9, Description = "9 letters" },
+            new WordDictionaryMapItem{ Length = 10, Data= Properties.Resources.words10, Description = "10 letters" },
+            new WordDictionaryMapItem{ Length = 11, Data= Properties.Resources.words11, Description = "11 letters" },
+            new WordDictionaryMapItem{ Length = 12, Data= Properties.Resources.words12, Description = "12 letters" },
+            new WordDictionaryMapItem{ Length = 13, Data= Properties.Resources.words13, Description = "13 letters" },
+            new WordDictionaryMapItem{ Length = 14, Data= Properties.Resources.words14, Description = "14 letters" },
+            new WordDictionaryMapItem{ Length = 15, Data= Properties.Resources.words15, Description = "15 letters" },
+            new WordDictionaryMapItem{ Length = 16, Data= Properties.Resources.words16, Description = "16 letters" },
+            new WordDictionaryMapItem{ Length = 17, Data= Properties.Resources.words17, Description = "17 letters" },
+            new WordDictionaryMapItem{ Length = 18, Data= Properties.Resources.words18, Description = "18 letters" },
+            new WordDictionaryMapItem{ Length = 19, Data= Properties.Resources.words19, Description = "19 letters" },
+            new WordDictionaryMapItem{ Length = 20, Data= Properties.Resources.words20, Description = "20 letters" },
+            new WordDictionaryMapItem{ Length = 21, Data= Properties.Resources.words21, Description = "21 letters" },
+            new WordDictionaryMapItem{ Length = 22, Data= Properties.Resources.words22, Description = "22 letters" },
+            new WordDictionaryMapItem{ Length = 23, Data= Properties.Resources.words23, Description = "23 letters" },
+            new WordDictionaryMapItem{ Length = 24, Data= Properties.Resources.words24, Description = "24 letters" },
+            new WordDictionaryMapItem{ Length = 25, Data= Properties.Resources.words25, Description = "25 letters" },
+            new WordDictionaryMapItem{ Length = 27, Data= Properties.Resources.words27, Description = "27 letters" },
+            new WordDictionaryMapItem{ Length = 28, Data= Properties.Resources.words28, Description = "28 letters" }
         };
 
         /// <summary>
@@ -121,7 +117,7 @@ namespace KeePassDPG
         public override ProtectedString Generate(PwProfile prf, CryptoRandomStream crsRandomSource)
         {
             // Get the generator options.
-            GeneratorOptions options = new GeneratorOptions(prf.CustomAlgorithmOptions);
+            var options = new GeneratorOptions(prf.CustomAlgorithmOptions);
 
             // Check if a word dictionary has already been loaded, if not, load it.
             if (_wordDictionary == null || _currentWordLength != options.WordLength)
@@ -131,7 +127,7 @@ namespace KeePassDPG
             }
 
             // Get a random word from the dictionary
-            RandomNumber randomNumber = new RandomNumber(crsRandomSource);
+            var randomNumber = new RandomNumber(crsRandomSource);
             string password = _wordDictionary.Count > 0 ? _wordDictionary[randomNumber.Next(_wordDictionary.Count)] : string.Empty;
             _wordDictionary.Remove(password);
 
@@ -153,42 +149,37 @@ namespace KeePassDPG
         /// <returns>The set of new options.</returns>
         public override string GetOptions(string strCurrentOptions)
         {
-            GeneratorOptions options = new GeneratorOptions(strCurrentOptions);
+            var options = new GeneratorOptions(strCurrentOptions);
 
             // Open the option dialog to generate new options.
-            OptionDialog optionsDialog = new OptionDialog();
+            var optionsDialog = new OptionDialog();
             options = optionsDialog.GetOptions(options);
             optionsDialog.Dispose();
 
             return options.ToString();
         }
 
-        /// <summary>
-        /// Extracts the word dictionary from built in dictionaries
-        /// </summary>
-        /// <param name="wordLength">The dictionary to extract.</param>
-        /// <returns>A list of words.</returns>
         private static List<string> ExtractWordDictionary(int wordLength)
         {
             // Get compressed file
-            byte[] compressedFile = _wordDictionaryMap[wordLength];
+            var compressedFile = WordDictionaryMap.Where(item => item.Length == wordLength).First().Data;
 
             // Decompress the file
-            using (MemoryStream compressedStream = new MemoryStream(compressedFile))
+            using (var compressedStream = new MemoryStream(compressedFile))
             {
-                using (MemoryStream decompressedStream = new MemoryStream())
+                using (var decompressedStream = new MemoryStream())
                 {
-                    using (GZipStream decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+                    using (var decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress))
                     {
-                        byte[] buffer = new byte[4096];
-                        int read;
+                        var buffer = new byte[4096];
+                        var read = 0;
                         while ((read = decompressionStream.Read(buffer, 0, buffer.Length)) > 0)
                             decompressedStream.Write(buffer, 0, read);
 
-                        byte[] bytes = decompressedStream.ToArray();
+                        var bytes = decompressedStream.ToArray();
 
                         // Extract words from file
-                        char[] chars = new char[bytes.Length / sizeof(char)];
+                        var chars = new char[bytes.Length / sizeof(char)];
                         Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
                         string wordsString = new string(chars);
 
@@ -198,16 +189,11 @@ namespace KeePassDPG
             }
         }
 
-        /// <summary>
-        /// Substitutes certain characters in the password string with numbers.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <returns>The resulting password.</returns>
         private static string SubstituteCharacters(string password, string substitutionList)
         {
-            Dictionary<char, char> replacementList = GetSubstitutionList(substitutionList);
+            var replacementList = GetSubstitutionList(substitutionList);
 
-            char[] passwordChars = password.ToCharArray();
+            var passwordChars = password.ToCharArray();
 
             for (int i = 0; i < passwordChars.Length; i++)
             {
@@ -218,38 +204,27 @@ namespace KeePassDPG
             return new string(passwordChars);
         }
 
-        /// <summary>
-        /// Parse the specified string to extract the substitution character list.
-        /// </summary>
-        /// <param name="substitutionList">A string containing the substitution character list.</param>
-        /// <returns>A Dictionary</returns>
         private static Dictionary<char, char> GetSubstitutionList(string substitutionList)
         {
-            Dictionary<char, char> replacementDictionary = new Dictionary<char, char>();
+            var replacementDictionary = new Dictionary<char, char>();
 
-            string[] replacementElements = substitutionList.Split(';');
+            var replacementElements = substitutionList.Split(';');
 
             foreach (string replacementElement in replacementElements)
             {
-                string[] elementMembers = replacementElement.Split(new char[] { '=' });
+                var elementMembers = replacementElement.Split(new char[] { '=' });
                 replacementDictionary.Add(elementMembers[0][0], elementMembers[1][0]);
             }
 
             return replacementDictionary;
         }
 
-        /// <summary>
-        /// Capitalizes characters on the password.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <param name="capitalizationType">The capitalization type.</param>
-        /// <returns>The capitalized password.</returns>
         private static string CapitalizePassword(string password, CapitalizationTypes capitalizationType, RandomNumber randomNumber)
         {
             if (capitalizationType == CapitalizationTypes.None)
                 return password;
 
-            char[] passwordChars = password.ToCharArray();
+            var passwordChars = password.ToCharArray();
 
             if (capitalizationType == CapitalizationTypes.FirstLetter)
             {
@@ -266,7 +241,7 @@ namespace KeePassDPG
             else
             {
                 // First let's make sure this can be applied to the current string
-                bool hasLetter = false;
+                var hasLetter = false;
                 for (int i = 0; i < passwordChars.Length; i++)
                 {
                     if (char.IsLetter(passwordChars[i]))
