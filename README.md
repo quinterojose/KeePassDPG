@@ -1,3 +1,5 @@
+[![build](https://github.com/Mascavidrio/KeePassDPG/actions/workflows/build.yml/badge.svg)](https://github.com/Mascavidrio/KeePassDPG/actions/workflows/build.yml)
+
 # KeePassDPG
 A plugin for KeePass to allow creating easy to remember passwords based on a word dictionary.
 
