@@ -189,11 +189,6 @@ namespace KeePassDPG
             }
         }
 
-        /// <summary>
-        /// Substitutes certain characters in the password string with numbers.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <returns>The resulting password.</returns>
         private static string SubstituteCharacters(string password, string substitutionList)
         {
             Dictionary<char, char> replacementList = GetSubstitutionList(substitutionList);
@@ -209,11 +204,6 @@ namespace KeePassDPG
             return new string(passwordChars);
         }
 
-        /// <summary>
-        /// Parse the specified string to extract the substitution character list.
-        /// </summary>
-        /// <param name="substitutionList">A string containing the substitution character list.</param>
-        /// <returns>A Dictionary</returns>
         private static Dictionary<char, char> GetSubstitutionList(string substitutionList)
         {
             Dictionary<char, char> replacementDictionary = new Dictionary<char, char>();
@@ -229,12 +219,6 @@ namespace KeePassDPG
             return replacementDictionary;
         }
 
-        /// <summary>
-        /// Capitalizes characters on the password.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <param name="capitalizationType">The capitalization type.</param>
-        /// <returns>The capitalized password.</returns>
         private static string CapitalizePassword(string password, CapitalizationTypes capitalizationType, RandomNumber randomNumber)
         {
             if (capitalizationType == CapitalizationTypes.None)

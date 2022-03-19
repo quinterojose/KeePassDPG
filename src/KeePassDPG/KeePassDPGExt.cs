@@ -8,14 +8,8 @@ namespace KeePassDPG
     /// </summary>
     public class KeePassDPGExt : Plugin
     {
-        /// <summary>
-        /// KeePass plugin host.
-        /// </summary>
         private IPluginHost _host = null;
 
-        /// <summary>
-        /// Password generator instance.
-        /// </summary>
         private PasswordGenerator _passwordGenerator = null;
 
         /// <summary>
@@ -25,6 +19,8 @@ namespace KeePassDPG
         /// <returns>True if initialization is successful, false otherwise.</returns>
         public override bool Initialize(IPluginHost host)
         {
+            if(host == null) return false;
+
             _host = host;
 
             // Create the password generator objetct and add it to the generator pool in KeePass.
@@ -32,6 +28,17 @@ namespace KeePassDPG
             _host.PwGeneratorPool.Add(_passwordGenerator);
 
             return true;
+        }
+
+        /// <summary>
+        /// Clean up when plugin is terminated.
+        /// </summary>
+        public override void Terminate()
+        {
+            if (_host != null)
+                _host.PwGeneratorPool.Remove(_passwordGenerator.Uuid);
+
+            _passwordGenerator = null;
         }
 
         /// <summary>

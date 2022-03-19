@@ -7,10 +7,7 @@ namespace KeePassDPG
     /// </summary>
     public class RandomNumber
     {
-        /// <summary>
-        /// The random stream generator.
-        /// </summary>
-        private CryptoRandomStream _stream = null;
+        private readonly CryptoRandomStream _stream;
 
         /// <summary>
         /// Initializes a new RandomNumber
