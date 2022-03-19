@@ -1,0 +1,49 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+env:
+  KEEPASS_VERSION: '2.50'
+  KEEPASS_VERSION_MD5: 'FE96FB7F40244BEDDAFF2FD7A49BF0F8'
+  PLUGIN_SOURCE_DIRECTORY: 'src\KeePassDPG'
+  PLUGIN_OUTPUT_PATH: 'src\KeePassDPG.plgx'
+  PLUGIN_FILE_NAME: 'KeePassDPG.plgx'
+  PLUGIN_NAME: 'KeePassDPG'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v2
+      
+    - name: Download KeePass Portable
+      uses: carlosperate/download-file-action@v1.1.1
+      with:
+        file-url: 'https://sourceforge.net/projects/keepass/files/KeePass%202.x/${{ env.KEEPASS_VERSION }}/KeePass-${{ env.KEEPASS_VERSION }}.zip/download'
+        file-name: 'KeePass-${{ env.KEEPASS_VERSION }}.zip'
+        md5: ${{ env.KEEPASS_VERSION_MD5 }}
+
+    - name: Extract KeePass Portable
+      run: 7z x 'KeePass-${{ env.KEEPASS_VERSION }}.zip' -o${{ github.workspace }}\KeePass-Portable
+
+    - name: Create PLGX
+      run: KeePass-Portable\KeePass.exe --plgx-create ${{ github.workspace }}\${{ env.PLUGIN_SOURCE_DIRECTORY }}
+
+    - name: Upload PLGX
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: ${{ env.PLUGIN_FILE_NAME }}
+        path: ${{ env.PLUGIN_OUTPUT_PATH }}
+        if-no-files-found: error
+        
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        name: '${{ env.PLUGIN_NAME }} ${{ github.ref_name }}'
+        artifacts: '**\${{ env.PLUGIN_FILE_NAME }}'
+        artifactErrorsFailBuild: true
+        token: ${{ secrets.GITHUB_TOKEN }}
