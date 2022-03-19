@@ -19,7 +19,8 @@ namespace KeePassDPG
         /// <returns>True if initialization is successful, false otherwise.</returns>
         public override bool Initialize(IPluginHost host)
         {
-            if(host == null) return false;
+            if(host == null)
+                return false;
 
             _host = host;
 

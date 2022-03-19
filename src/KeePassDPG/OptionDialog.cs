@@ -22,7 +22,7 @@ namespace KeePassDPG
 
             if (ShowDialog() != DialogResult.OK) return defaults;
 
-            GeneratorOptions options = new GeneratorOptions
+            var options = new GeneratorOptions
             {
                 WordLength = ((WordDictionaryMapItem)PasswordLengthComboBox.SelectedItem).Length,
                 SubstituteCharacters = SubsituteCheckBox.Checked,

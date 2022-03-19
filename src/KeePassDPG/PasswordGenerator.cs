@@ -117,7 +117,7 @@ namespace KeePassDPG
         public override ProtectedString Generate(PwProfile prf, CryptoRandomStream crsRandomSource)
         {
             // Get the generator options.
-            GeneratorOptions options = new GeneratorOptions(prf.CustomAlgorithmOptions);
+            var options = new GeneratorOptions(prf.CustomAlgorithmOptions);
 
             // Check if a word dictionary has already been loaded, if not, load it.
             if (_wordDictionary == null || _currentWordLength != options.WordLength)
@@ -127,7 +127,7 @@ namespace KeePassDPG
             }
 
             // Get a random word from the dictionary
-            RandomNumber randomNumber = new RandomNumber(crsRandomSource);
+            var randomNumber = new RandomNumber(crsRandomSource);
             string password = _wordDictionary.Count > 0 ? _wordDictionary[randomNumber.Next(_wordDictionary.Count)] : string.Empty;
             _wordDictionary.Remove(password);
 
@@ -149,10 +149,10 @@ namespace KeePassDPG
         /// <returns>The set of new options.</returns>
         public override string GetOptions(string strCurrentOptions)
         {
-            GeneratorOptions options = new GeneratorOptions(strCurrentOptions);
+            var options = new GeneratorOptions(strCurrentOptions);
 
             // Open the option dialog to generate new options.
-            OptionDialog optionsDialog = new OptionDialog();
+            var optionsDialog = new OptionDialog();
             options = optionsDialog.GetOptions(options);
             optionsDialog.Dispose();
 
@@ -162,24 +162,24 @@ namespace KeePassDPG
         private static List<string> ExtractWordDictionary(int wordLength)
         {
             // Get compressed file
-            byte[] compressedFile = WordDictionaryMap.Where(item => item.Length == wordLength).First().Data;
+            var compressedFile = WordDictionaryMap.Where(item => item.Length == wordLength).First().Data;
 
             // Decompress the file
-            using (MemoryStream compressedStream = new MemoryStream(compressedFile))
+            using (var compressedStream = new MemoryStream(compressedFile))
             {
-                using (MemoryStream decompressedStream = new MemoryStream())
+                using (var decompressedStream = new MemoryStream())
                 {
-                    using (GZipStream decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+                    using (var decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress))
                     {
-                        byte[] buffer = new byte[4096];
-                        int read;
+                        var buffer = new byte[4096];
+                        var read = 0;
                         while ((read = decompressionStream.Read(buffer, 0, buffer.Length)) > 0)
                             decompressedStream.Write(buffer, 0, read);
 
-                        byte[] bytes = decompressedStream.ToArray();
+                        var bytes = decompressedStream.ToArray();
 
                         // Extract words from file
-                        char[] chars = new char[bytes.Length / sizeof(char)];
+                        var chars = new char[bytes.Length / sizeof(char)];
                         Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
                         string wordsString = new string(chars);
 
@@ -191,9 +191,9 @@ namespace KeePassDPG
 
         private static string SubstituteCharacters(string password, string substitutionList)
         {
-            Dictionary<char, char> replacementList = GetSubstitutionList(substitutionList);
+            var replacementList = GetSubstitutionList(substitutionList);
 
-            char[] passwordChars = password.ToCharArray();
+            var passwordChars = password.ToCharArray();
 
             for (int i = 0; i < passwordChars.Length; i++)
             {
@@ -206,13 +206,13 @@ namespace KeePassDPG
 
         private static Dictionary<char, char> GetSubstitutionList(string substitutionList)
         {
-            Dictionary<char, char> replacementDictionary = new Dictionary<char, char>();
+            var replacementDictionary = new Dictionary<char, char>();
 
-            string[] replacementElements = substitutionList.Split(';');
+            var replacementElements = substitutionList.Split(';');
 
             foreach (string replacementElement in replacementElements)
             {
-                string[] elementMembers = replacementElement.Split(new char[] { '=' });
+                var elementMembers = replacementElement.Split(new char[] { '=' });
                 replacementDictionary.Add(elementMembers[0][0], elementMembers[1][0]);
             }
 
@@ -224,7 +224,7 @@ namespace KeePassDPG
             if (capitalizationType == CapitalizationTypes.None)
                 return password;
 
-            char[] passwordChars = password.ToCharArray();
+            var passwordChars = password.ToCharArray();
 
             if (capitalizationType == CapitalizationTypes.FirstLetter)
             {
@@ -241,7 +241,7 @@ namespace KeePassDPG
             else
             {
                 // First let's make sure this can be applied to the current string
-                bool hasLetter = false;
+                var hasLetter = false;
                 for (int i = 0; i < passwordChars.Length; i++)
                 {
                     if (char.IsLetter(passwordChars[i]))
