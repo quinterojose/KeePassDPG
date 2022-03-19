@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
     branches:
-      - automation-updates
+      - main
 
 env:
   SOLUTION_FILE_PATH: 'src\KeePassDPG.sln'
