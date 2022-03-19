@@ -60,6 +60,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RandomNumber.cs" />
+    <Compile Include="WordDictionaryMapItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OptionDialog.resx">
