@@ -2,9 +2,11 @@ name: build
 
 on:
   push:
+    branches:
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 env:
   SOLUTION_FILE_PATH: 'src\KeePassDPG.sln'
@@ -16,15 +18,15 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4.1.1
 
     - name: Set up MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.3.1
 
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4.0.0
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     - name: Restore NuGet packages
       run: nuget restore ${{env.SOLUTION_FILE_PATH}}

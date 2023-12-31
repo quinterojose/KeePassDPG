@@ -5,8 +5,8 @@ on:
     tags:
       - '*'
 env:
-  KEEPASS_VERSION: '2.50'
-  KEEPASS_VERSION_MD5: 'FE96FB7F40244BEDDAFF2FD7A49BF0F8'
+  KEEPASS_VERSION: '2.55'
+  KEEPASS_VERSION_MD5: '904F85446CB64116352E03B1814136D5'
   PLUGIN_SOURCE_DIRECTORY: 'src\KeePassDPG'
   PLUGIN_OUTPUT_PATH: 'src\KeePassDPG.plgx'
   PLUGIN_FILE_NAME: 'KeePassDPG.plgx'
@@ -18,10 +18,23 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4.1.1
+      with:
+        fetch-depth: 0
+
+    - name: Install GitTools
+      uses: gittools/actions/gitversion/setup@v0.10.2
+      with:
+        versionSpec: '6.0.0-beta.4'
+
+    - name: Set Version Number
+      uses: gittools/actions/gitversion/execute@v0.10.2
+      with:
+        updateAssemblyInfo: true
+        useConfigFile: true
       
     - name: Download KeePass Portable
-      uses: carlosperate/download-file-action@v1.1.1
+      uses: carlosperate/download-file-action@v2.0.1
       with:
         file-url: 'https://sourceforge.net/projects/keepass/files/KeePass%202.x/${{ env.KEEPASS_VERSION }}/KeePass-${{ env.KEEPASS_VERSION }}.zip/download'
         file-name: 'KeePass-${{ env.KEEPASS_VERSION }}.zip'
@@ -39,11 +52,3 @@ jobs:
         name: ${{ env.PLUGIN_FILE_NAME }}
         path: ${{ env.PLUGIN_OUTPUT_PATH }}
         if-no-files-found: error
-        
-    - name: Create Release
-      uses: ncipollo/release-action@v1
-      with:
-        name: '${{ env.PLUGIN_NAME }} ${{ github.ref_name }}'
-        artifacts: '**\${{ env.PLUGIN_FILE_NAME }}'
-        artifactErrorsFailBuild: true
-        token: ${{ secrets.GITHUB_TOKEN }}
