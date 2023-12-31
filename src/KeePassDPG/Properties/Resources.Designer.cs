@@ -90,7 +90,7 @@ namespace KeePassDPG.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://raw.githubusercontent.com/Mascavidrio/KeePassDPG/master/plugin-version.txt.
+        ///   Looks up a localized string similar to https://quinterojose.github.io/keepass-plugin-versions.txt.
         /// </summary>
         internal static string UpdateUrl {
             get {

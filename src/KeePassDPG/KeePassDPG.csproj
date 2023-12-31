@@ -34,8 +34,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KeePass, Version=2.50.0.21065, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\KeePass.2.50.0.21065\lib\net462\KeePass.exe</HintPath>
+    <Reference Include="KeePass, Version=2.55.0.18204, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\KeePass.2.55.0.18204\lib\net462\KeePass.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

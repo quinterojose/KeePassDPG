@@ -19,12 +19,12 @@ namespace KeePassDPG
         /// <returns>True if initialization is successful, false otherwise.</returns>
         public override bool Initialize(IPluginHost host)
         {
-            if(host == null)
+            if (host == null)
                 return false;
 
             _host = host;
 
-            // Create the password generator objetct and add it to the generator pool in KeePass.
+            // Create the password generator object and add it to the generator pool in KeePass.
             _passwordGenerator = new PasswordGenerator();
             _host.PwGeneratorPool.Add(_passwordGenerator);
 
